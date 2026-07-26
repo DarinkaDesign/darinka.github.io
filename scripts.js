@@ -13,14 +13,14 @@ menuinmenu.addEventListener('click', function(event) {
 	document.body.classList.remove('open-menu');	
 });
 
-/* link in menu pointing to inner sections of the page */
-var menu_links = document.querySelectorAll('#menu a');
+/* same-page links pointing to inner sections of the page */
+var internal_links = document.querySelectorAll('a[href^="#"]');
 
-for (let i = 0; i < menu_links.length; i++) {
+for (let i = 0; i < internal_links.length; i++) {
 	
-	menu_links[i].addEventListener("click", function(event) {
+	internal_links[i].addEventListener("click", function(event) {
 		/* what link was clicked? */
-		var pointingTo = menu_links[i].getAttribute('href');
+		var pointingTo = internal_links[i].getAttribute('href');
 		if (!pointingTo || pointingTo.charAt(0) !== '#') {
 			return;
 		}
@@ -41,7 +41,8 @@ for (let i = 0; i < menu_links.length; i++) {
 		}
 		
 		/* scroll there */
-		window.scroll({ left: sectionPosX, top: sectionPosY, behavior: 'smooth' });
+		var scrollBehavior = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
+		window.scroll({ left: sectionPosX, top: sectionPosY, behavior: scrollBehavior });
 	});
 }
 
@@ -73,12 +74,8 @@ window.scrollConverter = (function (window, document, undefined) {
 				return true;
 			}
 
-			var delta, numPixelsPerStep, change, newOffset,
+			var delta, newOffset,
 				docOffset, scrollWidth, winWidth, maxOffset;
-
-			// Set scrolling parameters
-			delta = 0;
-			numPixelsPerStep = 10;
 
 			// Find the maximum offset for the scroll
 			docOffset = (docElem ? docElem.offsetWidth : 0) || 0;
@@ -86,45 +83,33 @@ window.scrollConverter = (function (window, document, undefined) {
 			winWidth = docElem ? docElem.clientWidth : 0;
 			maxOffset = Math.max(docOffset, scrollWidth) - winWidth;
 
-			// Chrome and Safari seem to get interference when scrolling horizontally
-			// with a trackpad, so if the scroll is horizontal we just ignore it here
-			// and let the browser scroll like normal. These properties don't exist in
-			// all browsers, but it also seems to work fine in other browsers, so this
-			// is fine.
-			if (Math.abs(event.wheelDeltaX) > Math.abs(event.wheelDeltaY)) {
+			// Let deliberate horizontal trackpad gestures use native scrolling.
+			if (Math.abs(event.deltaX) > Math.abs(event.deltaY)) {
 				return true;
 			}
 
-			// "Normalize" the wheel value across browsers
-			//  The delta value after this will not be the same for all browsers.
-			//  Instead, it is normalized in a way to try to give a pretty similar feeling in all browsers.
-			// 
-			//  Firefox and Opera
-			if (event.detail) {
-				delta = event.detail * -240;
-			}
-			// IE, Safari and Chrome
-			else if (event.wheelDelta) {
-				delta = event.wheelDelta * 5;
+			// Preserve pixel-for-pixel trackpad movement. Convert line/page wheel
+			// units only when the browser does not report pixels.
+			delta = event.deltaY;
+			if (event.deltaMode === 1) {
+				delta *= 16;
+			} else if (event.deltaMode === 2) {
+				delta *= window.innerWidth;
 			}
 
-			// Get the real offset change from the delta
-			//  A positive change is when the user scrolled the wheel up (in regular scrolling direction)
-			//  A negative change is when the user scrolled the wheel down
-			change = delta / 120 * numPixelsPerStep;
-			newOffset = offset.x - change;
+			newOffset = offset.x + delta;
 
 			// Do the scroll if the new offset is positive
 			if (newOffset >= 0 && newOffset <= maxOffset) {
 				offset.x = newOffset;
 				offset.setByScript = true;
-				window.scrollTo(offset.x, offset.y);
+				window.scrollTo({ left: offset.x, top: offset.y, behavior: 'auto' });
 			}
 			// Keep the offset within the boundaries
 			else if (offset.x !== 0 && offset.x !== maxOffset) {
 				offset.x = newOffset > maxOffset ? maxOffset : 0;
 				offset.setByScript = true;
-				window.scrollTo(offset.x, offset.y);
+				window.scrollTo({ left: offset.x, top: offset.y, behavior: 'auto' });
 			}
 
 			// Fire the callback
@@ -182,19 +167,10 @@ window.scrollConverter = (function (window, document, undefined) {
 			mouseWheelHandler = callback;
 			scrollHandler = updateOffsetOnScroll;
 
-			// Safari, Chrome, Opera, IE9+
+			// Modern browsers
 			if (window.addEventListener) {
-
-				// Safari, Chrome, Opera, IE9
-				if ("onmousewheel" in window) {
-					window.addEventListener("mousewheel", mouseWheelHandler, { passive: false });
-					window.addEventListener("scroll", scrollHandler, false);
-				}
-				// Firefox
-				else {
-					window.addEventListener("DOMMouseScroll", mouseWheelHandler, { passive: false });
-					window.addEventListener("scroll", scrollHandler, false);
-				}
+				window.addEventListener("wheel", mouseWheelHandler, { passive: false });
+				window.addEventListener("scroll", scrollHandler, false);
 			}
 			// IE8 and below
 			else {
@@ -206,19 +182,10 @@ window.scrollConverter = (function (window, document, undefined) {
 		unbindEvents = function () {
 			if (!mouseWheelHandler && !scrollHandler) return;
 
-			// Safari, Chrome, Opera, IE9+
+			// Modern browsers
 			if (window.removeEventListener) {
-
-				// Safari, Chrome, Opera, IE9
-				if ("onmousewheel" in window) {
-					window.removeEventListener("mousewheel", mouseWheelHandler, { passive: false });
-					window.removeEventListener("scroll", scrollHandler, false);
-				}
-				// Firefox
-				else {
-					window.removeEventListener("DOMMouseScroll", mouseWheelHandler, { passive: false });
-					window.removeEventListener("scroll", scrollHandler, false);
-				}
+				window.removeEventListener("wheel", mouseWheelHandler, { passive: false });
+				window.removeEventListener("scroll", scrollHandler, false);
 			}
 			// IE8 and below
 			else {
