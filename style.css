@@ -19,6 +19,7 @@ body {
 	--grey: #717980;
 	--pink: #f27477;
 	--lightpink: #F4F0F6;
+	--snow: #F6F6F6;
 	--white: #fff;
 	--gap: min(8vw, 128px);
 	margin: 0;
@@ -67,7 +68,7 @@ figcaption {margin: 0;}
 header, footer {position: absolute;padding: 0 var(--gap);width: calc(100vw - var(--gap) * 2);}
 body.horizontal header,
 body.horizontal footer {position: fixed;z-index: 9;}
-header {display: flex;align-items: center;flex-direction: row;margin-top: 4em;}
+header {display: flex;align-items: center;flex-direction: row;margin-top: 4vh;}
 header h1.logo {margin: 0;/* position: relative; *//* top: 4px; */z-index: 9;display: flex;align-items: center;}
 header img {margin: 0;flex-shrink: 0;}
 header .header-title {margin: 0 0 0 3em;padding-left: 3em;border-left: 1px solid var(--grey);color: var(--black);/* font-size: 14px; *//* line-height: 24px; */font-weight: 600;/* letter-spacing: -0.01em; */z-index: 90;}
@@ -96,7 +97,7 @@ body.open-menu a[data-action=open-menu] line:nth-child(1) {transform: rotate(45d
 body.open-menu a[data-action=open-menu] line:nth-child(2) {transform: rotate(-45deg) translateY(12px) translateX(-13px);}
 body.open-menu a[data-action=open-menu] line:nth-child(3) { transform: scale(0); }
 
-footer {position: relative;font-size: 10pt;bottom: 0;margin-bottom: 6vh;}
+footer {position: relative;font-size: 10pt;bottom: 0;margin-bottom: 4vh;}
 footer nav ul { list-style: none; display: flex; padding: 0; flex-wrap: wrap; }
 footer nav ul li { padding: 0 2em 0 0; color: var(--black); white-space: nowrap;}
 
@@ -142,7 +143,7 @@ p.large { font-size: 1.5em; line-height: 1.4; }
 
 body.horizontal main > testimonials {padding-left: 0;}
 testimonials {display: flex;gap: 24px;align-items: center;}
-testimonials article {width: 320px;height: 400px;box-sizing: border-box;border: 1px solid var(--lightpink);border-radius: 8px;gap: 2em;padding: 2.5em 2em;display: flex;flex-direction: column;flex-shrink: 0;background: var(--white);}
+testimonials article {width: 284px;height: 400px;box-sizing: border-box;border: 0;border-radius: 8px;gap: 2em;padding: 2.5em;display: flex;flex-direction: column;flex-shrink: 0;background: var(--snow);}
 testimonials .testimonial-avatar {width: 36px;height: 36px;border-radius: 50%;background: var(--lightpink);color: var(--grey);display: flex;align-items: center;justify-content: center;}
 testimonials .stars {display: flex;gap: 6px;margin: 0 0 auto;}
 testimonials .stars svg {display: block;flex: 0 0 auto;}
@@ -151,18 +152,16 @@ testimonials .testimonial-author {margin: 0;color: var(--grey);font-size: 12px;/
 
 body.horizontal main > certifications { }
 certifications h2 {margin: 0 0 36px;font-size: 2.25em;}
-certifications .certifications-label {margin: 0 0 28px;color: var(--black);font-size: 15px;line-height: 1.4;}
+certifications .certifications-label {margin: 0 0 28px;color: var(--black);font-weight: bold;line-height: 1.28;}
 certifications .certification-list {display: flex;flex-direction: column;gap: 26px;margin-bottom: 52px;}
-certifications .certification-row {display: flex;align-items: center; gap: 32px;}
+certifications .certification-row {display: grid;align-items: center;}
 certifications .certification-row img { flex: 0 0 auto;}
-certifications .cert-elite {width: 82px;margin-right: 22px;}
-certifications .cert-ux {width: 96px;}
-certifications .cert-process {width: 172px;}
-certifications .cert-google {width: 106px;margin-right: 16px;}
-certifications .cert-net {width: 112px;margin-left: 18px;}
+certifications .google-row {grid-template-columns: 106px 74px 1fr;column-gap: 20px;}
+certifications .process-row {grid-template-columns: 100px 172px 1fr;column-gap: 28px;}
+certifications .recognition-row {grid-template-columns: 90px 112px 1fr;column-gap: 32px;}
+certifications img {width: 100%;}
 certifications .certification-list p {margin: 0;color: var(--black);font-size: 13px;line-height: 1.15;letter-spacing: -0.02em;}
-certifications .cert-note {align-self: center;}
-certifications .tools-list {display: flex;align-items: center;gap: 34px;}
+certifications .tools-list {display: flex;align-items: center;gap: 1.5em;}
 certifications .tools-list img {width: 40px;height: 40px;object-fit: contain;}
 certifications .tools-list img:nth-child(4) {width: 68px;}
 certifications .tools-list img:nth-child(5) {width: 50px;}
@@ -190,10 +189,8 @@ body.horizontal main > end { min-width: 0; padding-left: 0; }
 	testimonials article {width: 100%;height: auto;max-width: 320px;}
 	testimonials::after { content: ''; width: var(--gap); }
 	testimonials .stars {margin-bottom: 64px;}
-	certifications .certification-row {flex-wrap: wrap;gap: 24px 32px;}
-	certifications .cert-elite,
-	certifications .cert-google,
-	certifications .cert-net {margin: 0;}
+	certifications .certification-row {grid-template-columns: none;display: flex;flex-wrap: wrap;gap: 24px 32px;}
+	certifications .recognition-row p {margin-left: 0;}
 	certifications .tools-list {flex-wrap: wrap;gap: 32px;}
 }
 @media only screen and (max-width: 360px) {
